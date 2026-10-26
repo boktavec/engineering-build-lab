@@ -1,0 +1,22 @@
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Environment secrets (keep .env.example files)
+.env
+.env.*
+!.env.example
+
+# Common generated artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+dist/
+build/
+.coverage
+.pytest_cache/
