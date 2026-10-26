@@ -1,23 +1,28 @@
-from fastapi.testclient import TestClient
+import json
 
-from src.main import app
-
-
-client = TestClient(app)
+from db.books import BOOKS_PATH
 
 
-def test_health_check():
+def test_health_check(client):
     assert client.get("/health").json() == {"status": "ok"}
 
 
-def test_catalogue_lists_fixture_books():
+def test_catalogue_list_keeps_original_response_shape(client):
     response = client.get("/books")
+
     assert response.status_code == 200
-    assert [book["isbn"] for book in response.json()] == ["BK-1001", "BK-1002", "BK-1003"]
+    assert response.json() == [
+        {
+            key: book[key]
+            for key in ("isbn", "title", "author", "available_copies")
+        }
+        for book in json.loads(BOOKS_PATH.read_text())
+    ]
 
 
-def test_catalogue_returns_book_by_isbn():
+def test_catalogue_returns_book_by_isbn(client):
     response = client.get("/books/BK-1001")
+
     assert response.status_code == 200
     assert response.json() == {
         "isbn": "BK-1001",
@@ -27,5 +32,5 @@ def test_catalogue_returns_book_by_isbn():
     }
 
 
-def test_unknown_isbn_returns_not_found():
+def test_unknown_isbn_returns_not_found(client):
     assert client.get("/books/unknown").status_code == 404

@@ -133,6 +133,7 @@ challenges/
 - When a new challenge is requested, choose a surprising but plausible **industry + engineering problem** based on the progression log. Reveal the assignment, not the implementation.
 - Do not supply an unsolicited plan for implementing the feature.
 - During coding, work from evidence and what the learner has tried. Ask at most one targeted clarifying question when necessary.
+- When explaining concepts during an active challenge, use examples unrelated to that challenge's domain or feature unless the learner explicitly asks for a challenge-specific example.
 - If explicitly asked to implement or show the solution, honor that request, but mention that it bypasses the independent-work default.
 - The learner can request easier/harder challenges, a technology focus, or a different domain at any time.
 - When the learner confirms a challenge is complete, update `CHALLENGE_LOG.md` with observed outcomes and create a dated learning note in the user's actual `~/Notes/Engineering/Technology/<Technology>/` folder for each technology used. Create the technology subfolder if needed. Before writing, check whether a note for that technology and specific work already exists: add a dated entry covering the feature/functionality, what the learner actually learned, and how they applied it only if that work is not already documented; otherwise avoid duplication. If no matching note exists, create one. Describe demonstrated learning and decisions accurately; don't claim the learner learned or implemented something that was supplied by AI.

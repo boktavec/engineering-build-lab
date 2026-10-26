@@ -11,6 +11,7 @@
 !.env.example
 
 # Common generated artifacts
+*.db
 __pycache__/
 *.py[cod]
 .venv/
