@@ -4,7 +4,14 @@ Use this log to select varied, gradually harder challenges. Record **observed pr
 
 ## Progress
 
-_No completed challenges yet. Start with Challenge 001, Level 1._
+### Challenge 001 — Rail Yard Consignment Search
+- **Level / industry / stack:** Level 1 / rail freight logistics / TypeScript, Express 5, Node.js `node:test`.
+- **Feature and skills practiced:** Status query filtering on the existing list route; status validation, Express query typing, and direct plus HTTP integration tests. The allowed statuses are a fixed set so a valid status with no fixture matches can be tested.
+- **Verification:** `npm test` — 23 passed; `npx tsc --noEmit` — passed. Tests exercise the real Express routes and the validator directly.
+- **What went well:** Covered omitted, valid, missing, unsupported, case-sensitive, repeated, and valid-but-unmatched status inputs; updated the fixture-list assertion after expanding the synthetic data.
+- **Gaps / next practice target:** Feature tests were authored with AI assistance; continue practicing deriving and implementing behavioral tests independently.
+- **Suggested next level:** Level 2, in a different domain and with a modest integration or persistence concept.
+
 
 ## Entry format
 
@@ -22,12 +29,12 @@ When the learner confirms completion, append a short entry with:
 
 ## Topic coverage to rotate through
 
-- [ ] TypeScript / Node.js APIs
+- [x] TypeScript / Node.js APIs
 - [ ] Python services
-- [ ] Middleware / auth / validation
+- [x] Middleware / auth / validation
 - [ ] Relational data / migrations
 - [ ] Caching / async work / queues
-- [ ] Testing / mocking / integration tests
+- [x] Testing / mocking / integration tests
 - [ ] External APIs / webhooks
 - [ ] AI integration / LangGraph
 - [ ] Docker / Kubernetes

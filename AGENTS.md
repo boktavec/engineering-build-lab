@@ -25,6 +25,12 @@ This is **not** interview simulation, a timed assessment, or a single evolving p
 7. Introduce at most **one major unfamiliar technology** or **two modest new concepts** per challenge. Set up prerequisites so the task is about the intended skill, not tool installation.
 8. Don't prescribe an architecture or algorithm when choosing that approach is part of the exercise. Describe observable behavior and constraints instead.
 
+## External documentation reference
+
+- Use the **Context7 MCP** (`context7`) for current third-party library, framework, SDK, and tool documentation when work depends on version-specific APIs, configuration, or behavior. Resolve the relevant library before querying its documentation, and check guidance against the version used in the challenge.
+- The challenge repository, README acceptance criteria, and existing code remain authoritative for project requirements; Context7 is a reference for external tool behavior, not a source of project decisions.
+- If Context7 is unavailable or does not cover the topic, consult official documentation and state any remaining uncertainty. Do not invent APIs or rely on remembered version-specific behavior.
+
 ## AI operating modes
 
 Choose the mode from the user's request. Never silently switch from guidance/review to implementation.
@@ -129,3 +135,5 @@ challenges/
 - During coding, work from evidence and what the learner has tried. Ask at most one targeted clarifying question when necessary.
 - If explicitly asked to implement or show the solution, honor that request, but mention that it bypasses the independent-work default.
 - The learner can request easier/harder challenges, a technology focus, or a different domain at any time.
+- When the learner confirms a challenge is complete, update `CHALLENGE_LOG.md` with observed outcomes and create a dated learning note in the user's actual `~/Notes/Engineering/Technology/<Technology>/` folder for each technology used. Create the technology subfolder if needed. Before writing, check whether a note for that technology and specific work already exists: add a dated entry covering the feature/functionality, what the learner actually learned, and how they applied it only if that work is not already documented; otherwise avoid duplication. If no matching note exists, create one. Describe demonstrated learning and decisions accurately; don't claim the learner learned or implemented something that was supplied by AI.
+- Also check `Personal/Interview prep/` for existing STAR answers. Add a dated STAR interview answer only when the completed work credibly supports a senior-level behavioral question and no existing answer already covers the same example. Base it on observed challenge work and the learner's actual decisions and outcomes; do not invent impact or claim experience the learner did not demonstrate. Create the directory if it does not exist. If relevant notes are inaccessible or the intended notes location is ambiguous, ask before creating or changing notes.
