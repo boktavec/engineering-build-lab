@@ -1,0 +1,5 @@
+[
+  {"isbn": "BK-1001", "title": "The Glass Orchard", "author": "Mira Sol", "available_copies": 4},
+  {"isbn": "BK-1002", "title": "Maps of the Quiet Sea", "author": "Jon Bell", "available_copies": 2},
+  {"isbn": "BK-1003", "title": "A Field Guide to Small Stars", "author": "R. K. Imani", "available_copies": 0}
+]
