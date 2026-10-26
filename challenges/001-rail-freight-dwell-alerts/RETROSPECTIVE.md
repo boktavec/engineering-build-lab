@@ -14,9 +14,11 @@ You also caught and corrected mismatches in the assistance itself. You redirecte
 
 ## How AI was used
 
-AI involvement was substantial in code production. It scaffolded the starter, converted the HTTP implementation to Express, edited the validator and its TypeScript types, expanded the fixture, and authored the unit and route tests. You supplied the behavior and constraints, made changes to the function and route yourself, chose to use a fixed status list, and repeatedly clarified which behavior should be tested and how.
+This retrospective does not count challenge scaffolding as AI assistance for the feature. For the feature work, AI produced or edited substantial code: it implemented changes to the validator and its TypeScript type, selected some entries for the fixed status list, and authored the unit and route tests. You supplied detailed requirements—including the validator's input and return behavior, then the decision to pass or define the allowed statuses independently of fixture contents—and made changes to the function and route yourself. You also specified that route tests should exercise the real API with minimal mocking.
 
-Overall, AI was effective as a fast implementation and verification partner, but not as an autonomous driver. Several responses initially missed your immediate request or the latest behavior, so you had to redirect it and ask for concrete results. The session was collaborative, with high AI assistance for implementation and tests and meaningful user direction on API semantics, edge cases, and verification boundaries. This was not an independent implementation exercise.
+Independent problem solving is not limited to manually typing every line. Here, you did meaningful independent analysis by translating the acceptance criteria into specific function behavior, recognizing that no status should preserve the full-list behavior, distinguishing missing/empty/unsupported/repeated values, and deciding that valid statuses must not be derived from current fixture data. AI was mainly the implementation and test-writing mechanism for portions of that design, not the source of all the problem-solving decisions. In terms of code authorship, assistance was substantial; in terms of defining and refining the contract, you provided substantial direction.
+
+AI was effective as a fast implementation and verification partner, but not as an autonomous driver. Several responses initially missed your immediate request or the latest behavior, so you had to redirect it and ask for concrete results. Your corrections improved the collaboration and kept the checks tied to the behavior you wanted.
 
 ## Senior-level signals
 
@@ -30,4 +32,4 @@ These are good examples of contract-first thinking, edge-case analysis, and veri
 
 ## What to practice next
 
-For the next challenge, try writing the acceptance-test cases yourself before implementation. A compact input/output table for omitted, empty, valid-match, valid-no-match, unsupported, and repeated values would have made the contract explicit early. Use AI first as a coach or reviewer, and ask it to implement only when you choose; continue requiring it to distinguish direct function tests from real API calls.
+For the next challenge, keep using precise behavior-first instructions when delegating implementation. A compact input/output table for omitted, empty, valid-match, valid-no-match, unsupported, and repeated values can make the contract visible before code is written; you can then decide whether to write the tests yourself or direct AI to implement them. Continue checking actual behavior and steering the agent back when it answers a different question.
