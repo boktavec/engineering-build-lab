@@ -59,7 +59,7 @@ curl http://127.0.0.1:8000/books
 # Returns the synthetic catalogue as a JSON array.
 ```
 
-The SQLite database path can be set with `DATABASE_PATH` when you implement the feature; the baseline does not create or use it.
+The service stores its local SQLite database at `db/books.db` and initializes it on startup.
 
 ## Optional stretch goal
 
