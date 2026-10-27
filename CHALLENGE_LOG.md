@@ -1,6 +1,6 @@
 # Engineering Build Lab — Challenge Log
 
-Use this log to select varied, gradually harder challenges. Record **observed progress**, not assumed completion. Do not add a completed entry until the learner asks for a review/log update.
+Use this log to select varied, gradually harder challenges. Record **observed progress**, not assumed completion. Do not add or update a completion/assessment entry until the learner asks for a review/log update. Do not reconstruct missing historical details; use `Not Observed` or `Unknown`.
 
 ## Progress
 
@@ -33,6 +33,14 @@ When the learner confirms completion, append a short entry with:
 - **What went well:**
 - **Gaps / next practice target:**
 - **Suggested next level:**
+- **Challenge type / skills:**
+- **Completion status:** Complete / Partial / Blocked / Abandoned
+- **Assessment scores:** Problem Understanding (15%): ; Problem-Solving and Reasoning (15%): ; Implementation and Correctness (20%): ; Testing and Verification (15%): ; Engineering Judgment (15%): ; Technical Understanding (10%): ; AI Effectiveness and Ownership (10%):
+- **Demonstrated strengths:**
+- **Knowledge gaps:**
+- **AI assistance patterns:**
+- **Key lessons:**
+- **Follow-up topics:**
 ```
 
 ## Topic coverage to rotate through

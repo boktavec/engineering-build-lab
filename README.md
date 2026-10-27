@@ -12,7 +12,7 @@ Each project lives in its own `challenges/NNN-short-name/` directory with its ow
 
 ## How AI is used
 
-AI scaffolds the working baseline, but does not implement the assigned feature. You own architecture, implementation, tests, and verification. Ask AI for explanations, progressively stronger hints, debugging guidance, or a review; it must not silently change your solution or reveal the full implementation unless explicitly asked. See [AGENTS.md](AGENTS.md) and [SCAFFOLD_PROMPT.md](SCAFFOLD_PROMPT.md).
+AI scaffolds the working baseline, but does not implement the assigned feature by default. You own the critical thinking and decisions. AI may implement when you provide a detailed walkthrough of what to write; it must not guess requirements or build from vague requests. Ask for explanations, hints, debugging guidance, or review, and verify assisted changes. After a challenge, the requested review can include a rubric-based assessment, interactive technical debrief, retrospective, and blog notes. See [AGENTS.md](AGENTS.md) and [SCAFFOLD_PROMPT.md](SCAFFOLD_PROMPT.md).
 
 ## Difficulty progression
 
