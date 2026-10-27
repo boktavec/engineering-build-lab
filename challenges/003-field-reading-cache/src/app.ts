@@ -7,6 +7,15 @@ export interface Reading {
   recordedAt: string;
 }
 
+
+interface CachedData extends Reading {
+  insertedAt: number;
+}
+interface CacheProp {
+  id?: string;
+  cache?: CachedData[];
+}
+
 const fields = [
   { id: 'field-north', name: 'North Acre', crop: 'barley' },
   { id: 'field-south', name: 'South Acre', crop: 'oats' },
@@ -17,6 +26,59 @@ const readings: Reading[] = [
   { id: 'r-101', fieldId: 'field-north', moisture: 29.8, recordedAt: '2025-04-10T12:00:00Z' },
   { id: 'r-102', fieldId: 'field-south', moisture: 34.1, recordedAt: '2025-04-10T09:30:00Z' },
 ];
+
+
+class Cache {
+  private cache
+  public ttl
+
+  constructor(ttl: number) {
+    this.cache = new Map<string, CachedData>()
+    this.ttl = ttl
+  }
+
+  add(data: CachedData) {
+    data.insertedAt = Math.floor(Date.now()/1000)
+    let existingList = this.cache.get(data.id)
+    let updateList = [data, existingList...]
+    this.cache.set(data.id, data)
+  }
+
+  update(data: CachedData) {
+    data.insertedAt = Math.floor(Date.now()/1000)
+    this.cache.set(data.id, data)
+  }
+
+  delete(id: string) {
+    this.cache.delete(id)
+  }
+
+  get(id: string) {
+    let ttlInSecs = this.ttl*60
+    let timeNow = Math.floor(Date.now()/1000)
+
+    let reading = this.cache.get(id)
+
+    if (!reading) {
+      console.log("no entry for id")
+      return 1
+    }
+
+    if ((timeNow-ttlInSecs) > reading.insertedAt) {
+      console.log("ttl expired pull new one")
+      return 2
+    }
+
+    return reading
+
+  }
+
+
+}
+
+let ttl: number = 5
+
+const cache = new Cache(ttl)
 
 export const app = express();
 app.use(express.json());
