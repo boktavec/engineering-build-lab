@@ -8,7 +8,7 @@ export interface Reading {
 }
 
 interface CachedData {
-  readings: Reading[];
+  reading: Reading;
   insertedAt: number;
 }
 
@@ -24,51 +24,66 @@ const readings: Reading[] = [
 ];
 
 
-class Cache {
+export class Cache {
   private cache
   public ttl
 
   constructor(ttl: number) {
-    this.cache = new Map<string, CachedData>()
+    this.cache = new Map<string, CachedData[]>()
     this.ttl = ttl
   }
 
   add(data: Reading) {
-    data.insertedAt = Math.floor(Date.now()/1000)
-    let existingList = this.cache.get(data.readings?.[0].id)
-    let updateList = [data, existingList...]
-    this.cache.set(data.id, data)
-  }
+    let id = data.fieldId
+    let time = Math.floor(Date.now()/1000)
+    let cacheData: CachedData = {reading: data, insertedAt: time}
+    let existingList = this.cache.get(id)
 
-  update(data: CachedData) {
-    data.insertedAt = Math.floor(Date.now()/1000)
-    this.cache.set(data.id, data)
+    if(existingList) {
+      existingList.push(cacheData)
+      this.cache.set(id, existingList)
+      return
+    }
+
+    this.cache.set(id, [cacheData])
   }
 
   delete(id: string) {
     this.cache.delete(id)
   }
 
-  get(id: string) {
-    let ttlInSecs = this.ttl*60
-    let timeNow = Math.floor(Date.now()/1000)
+  removeExpired(id: string) {
+    let readings = this.cache.get(id)
+    let ttl = this.ttl
+    let expired = (Date.now()/1000) - (ttl*60)
 
-    let reading = this.cache.get(id)
-
-    if (!reading) {
-      console.log("no entry for id")
-      return 1
+    if (!readings) {
+      return []
     }
 
-    if ((timeNow-ttlInSecs) > reading.insertedAt) {
-      console.log("ttl expired pull new one")
-      return 2
+    if(readings) {
+      let nonExpired = readings.filter((x) => x.insertedAt >= expired)
+      this.cache.set(id, nonExpired)
+      return nonExpired
     }
-
-    return reading
 
   }
 
+  get(id: string) {
+    let list: Reading[]
+    let readings = this.cache.get(id)
+
+    if(readings) {
+      readings = this.removeExpired(id)
+    }
+
+    if (readings) {
+      list = readings.map((readings) => readings.reading)
+      return list
+    }
+
+
+  }
 
 }
 

@@ -34,4 +34,27 @@ I am thinking of having a function that deletes entries whose TTL has expired, a
 
 My proposed starting point is the `add` function: take an individual reading, get the inserted time in seconds, and add it to the entry. If the key does not exist, create the key and array and add the entry. Remove stale readings, then return the most up-to-date readings.
 
+## Progress note — 2026-10-27 17:31:28 EDT
+
+### Current progress
+
+I have now got most of the cache working as expected. The happy paths return the values I expect. I had some difficulty with expiration because I had the comparison direction flipped; I corrected it. The cache still needs to be integrated into the application flow, and I need to resolve the delete flow and handle bad paths.
+
+### Verification during this session
+
+- In direct runs of my current `Cache` class, adding multiple readings for the same field returned the readings for that field, and readings for different fields stayed separate.
+- A run with a one-minute TTL and simulated time included older and newer readings. Calling `get` after advancing time returned only the newer North readings; the South readings were still present. After deleting the South entry, `get` returned `undefined`.
+- These were direct runtime runs of the cache, not feature tests or end-to-end verification of the API routes. My assessment that the happy paths are working is my current report; route integration and bad-path handling remain unfinished.
+
+### AI use and ownership
+
+- **My work:** I wrote and adjusted the cache behavior and reasoned through the reading-array shape, TTL timestamps, expiration comparison, and expected outputs. I noticed the comparison direction issue and changed it.
+- **AI assistance:** I used AI to explain TypeScript classes, `Map`, array operations, `Date.now()`, UTC timestamps, and the TTL cutoff; I also asked it to run the cache directly and show outputs for individual and multiple-reading scenarios. Seeing the outputs helped me check my understanding against actual behavior.
+- **Scope correction:** When I asked AI to implement and test the cache, it interpreted that as wiring the cache into the API routes and briefly edited an existing test. I clarified that I wanted direct cache runs only. The route integration and test-file edits were reverted; I restored my cache version, and the later runs were against that version. This was an instance where I needed to narrow the request and verify which version was being exercised.
+- **Ownership:** AI explanations and runtime checks supported my implementation, but I made the cache changes and chose the expected behavior. No feature test files were left behind by this work.
+
+### Current next focus
+
+Integrate the cache into the application flow, finish the delete behavior, and handle bad-path cases.
+
 
