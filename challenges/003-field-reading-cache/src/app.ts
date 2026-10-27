@@ -7,13 +7,9 @@ export interface Reading {
   recordedAt: string;
 }
 
-
-interface CachedData extends Reading {
+interface CachedData {
+  readings: Reading[];
   insertedAt: number;
-}
-interface CacheProp {
-  id?: string;
-  cache?: CachedData[];
 }
 
 const fields = [
@@ -37,9 +33,9 @@ class Cache {
     this.ttl = ttl
   }
 
-  add(data: CachedData) {
+  add(data: Reading) {
     data.insertedAt = Math.floor(Date.now()/1000)
-    let existingList = this.cache.get(data.id)
+    let existingList = this.cache.get(data.readings?.[0].id)
     let updateList = [data, existingList...]
     this.cache.set(data.id, data)
   }
