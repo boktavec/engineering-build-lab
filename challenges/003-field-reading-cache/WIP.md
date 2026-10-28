@@ -75,4 +75,12 @@ AI implemented the final cache-refresh change in `src/app.ts` after I explicitly
 
 I explained that refreshing all readings aligns them to one TTL; that a missing cache key is recreated from the source; that POST updates both source and cache; and that a process-local cache/source would diverge across Node processes and would not survive restart. See [`RETROSPECTIVE.md`](RETROSPECTIVE.md) for the full review, test evidence, debrief record, and assessment.
 
+## Reflection — time and learning
+
+This took a lot longer than I expected—probably 4–6 hours over the course of the day. A lot of that time went into asking questions and gradually getting a clearer understanding of what needed to be built. I don't think I had ever manually implemented even a basic cache before, so I was still trying to understand how caching works internally. That made it hard to make meaningful progress until around the end of the second hour, when I realized my original mental model was off and needed to rebuild the cache flow.
+
+That rebuild was the biggest pivot, but it was interesting to see how caching works in a general sense. There was a lot of data flow to keep straight. Once I got the core cache functions working as expected, connecting them to the routes was straightforward and took very little time. I needed some AI help to wrap up the refresh behavior and tests, but the final change was not major.
+
+Using AI to check behavior against the acceptance criteria and exercise the routes saved a lot of time because the feedback was nearly immediate. It let me make and verify changes faster. More importantly, looking at the actual outputs and talking through why something was wrong helped me understand the issue, rather than just asking AI to build or fix things and then trying to reverse-engineer its explanation.
+
 
