@@ -20,6 +20,22 @@ Use this log to select varied, gradually harder challenges. Record **observed pr
 - **Gaps / next practice target:** No blocking acceptance gaps remain. The database helper and most initial tests were AI-authored at your request; the final boolean and concurrency regression coverage was also AI-assisted, so these are not recorded as independent test implementation. Continue reviewing generated changes and verifying them against the contract.
 - **Suggested next level:** Level 3, in a different domain, with a scoped cross-cutting concern such as caching, asynchronous processing, or a migration.
 
+### Challenge 003 — Field Reading Cache
+- **Level / industry / stack:** Level 3 / agriculture / TypeScript, Node.js, Express 5, `node:test`.
+- **Feature and skills practiced:** Per-field process-local TTL cache, refresh from the in-memory source of truth, write-through behavior for successful POSTs, error-path preservation, and real-route/cache testing.
+- **Verification:** `npm test` — 5 passed; `npm run typecheck` — passed. Route tests use the real Express app; expiry refresh uses a separate real `Cache` instance with a simulated clock. The tested expiry path refreshes the full current field list when a cached item expires.
+- **What went well:** The learner corrected an initial one-reading-per-field assumption, used actual outputs to challenge mismatched runs, identified the reversed expiry comparison, and articulated why refreshed entries should share a TTL boundary and why the source list must be separate from the cache.
+- **Gaps / next practice target:** Final cache refresh logic and test updates were AI-authored at the learner's request. Explain and implement a small cache-refresh variant independently; consider an isolated app factory if route-level expiry needs end-to-end testing.
+- **Suggested next level:** Continue at Level 3 or progress modestly, varying domain and focus; reinforce testing design and state boundaries.
+- **Challenge type / skills:** Cross-cutting API cache; TTL semantics, source-of-truth separation, test isolation, HTTP integration.
+- **Completion status:** Complete.
+- **Assessment scores:** Problem Understanding (15%): 3; Problem-Solving and Reasoning (15%): 4; Implementation and Correctness (20%): 3; Testing and Verification (15%): 3; Engineering Judgment (15%): 3; Technical Understanding (10%): 3; AI Effectiveness and Ownership (10%): 4. Weighted reflection aid: 3.25/5; all categories observed, not an objective measure.
+- **Demonstrated strengths:** Persistent evidence-seeking; correction of AI scope and test-instance mismatch; high-level reasoning about process-local state and source data.
+- **Knowledge gaps:** Independent implementation of the final refresh path and feature tests was not demonstrated; persistent/shared state design was discussed only at a high level.
+- **AI assistance patterns:** AI explained TypeScript/JavaScript and TTL concepts, ran scenarios, authored the final refresh fix and tests, and drafted the retrospective. Learner checked outputs, corrected scope, and reviewed results.
+- **Key lessons:** Expired cached snapshots should be rebuilt from current source data; refreshing the full list aligns its TTL; cache state is not durable source data; fake time can leak effects through shared singleton state.
+- **Follow-up topics:** Cache-aside vs write-through semantics; durable source of truth and multi-process cache coherence; independent test design for expiry.
+
 
 ## Entry format
 
@@ -49,7 +65,7 @@ When the learner confirms completion, append a short entry with:
 - [x] Python services
 - [x] Middleware / auth / validation
 - [x] Relational data / migrations
-- [ ] Caching / async work / queues
+- [x] Caching / async work / queues
 - [x] Testing / mocking / integration tests
 - [ ] External APIs / webhooks
 - [ ] AI integration / LangGraph

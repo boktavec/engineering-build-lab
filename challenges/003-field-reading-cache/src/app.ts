@@ -26,16 +26,18 @@ const readings: Reading[] = [
 
 export class Cache {
   private cache
-  public ttl
+  public ttl: number
+  public publicReadings: Reading[]
 
-  constructor(ttl: number) {
+  constructor(readings: Reading[], ttl?: number) {
     this.cache = new Map<string, CachedData[]>()
-    this.ttl = ttl
+    this.ttl = ttl ? ttl*60 : 2*60
+    this.publicReadings = readings
+    this.publicReadings.forEach((x: Reading) => this.add(x,  Math.floor(Date.now()/1000)))
   }
 
-  add(data: Reading) {
+  add(data: Reading, time: number) {
     let id = data.fieldId
-    let time = Math.floor(Date.now()/1000)
     let cacheData: CachedData = {reading: data, insertedAt: time}
     let existingList = this.cache.get(id)
 
@@ -48,50 +50,42 @@ export class Cache {
     this.cache.set(id, [cacheData])
   }
 
+  reload(id: string, time: number) {
+    const refreshed = this.publicReadings
+      .filter((reading) => reading.fieldId === id)
+      .map((reading) => ({ reading, insertedAt: time }))
+    this.cache.set(id, refreshed)
+    return refreshed
+  }
+
   delete(id: string) {
     this.cache.delete(id)
+    return 0
   }
 
   removeExpired(id: string) {
-    let readings = this.cache.get(id)
-    let ttl = this.ttl
-    let expired = (Date.now()/1000) - (ttl*60)
+    const readings = this.cache.get(id)
+    const time = Math.floor(Date.now() / 1000)
+    const expired = time - this.ttl
 
-    if (!readings) {
-      return []
+    if (!readings || readings.length === 0 || readings.some((reading) => reading.insertedAt < expired)) {
+      return this.reload(id, time)
     }
 
-    if(readings) {
-      let nonExpired = readings.filter((x) => x.insertedAt >= expired)
-      this.cache.set(id, nonExpired)
-      return nonExpired
-    }
-
+    return readings
   }
 
   get(id: string) {
-    let list: Reading[]
-    let readings = this.cache.get(id)
-
-    if(readings) {
-      readings = this.removeExpired(id)
-    }
-
-    if (readings) {
-      list = readings.map((readings) => readings.reading)
-      return list
-    }
-
-
+    return this.removeExpired(id).map(({ reading }) => reading)
   }
-
 }
 
 let ttl: number = 5
 
-const cache = new Cache(ttl)
+const cache = new Cache(readings, ttl)
 
 export const app = express();
+
 app.use(express.json());
 
 app.get('/health', (_request, response) => response.json({ status: 'ok' }));
@@ -101,10 +95,14 @@ app.get('/api/fields', (_request, response) => response.json(fields));
 app.get('/api/fields/:fieldId/readings', (request, response) => {
   const field = fields.find(({ id }) => id === request.params.fieldId);
   if (!field) return response.status(404).json({ error: 'Field not found' });
-  return response.json(readings.filter(({ fieldId }) => fieldId === field.id));
+
+  let readings = cache.get(field.id)
+
+  return response.json(readings)
 });
 
 app.post('/api/fields/:fieldId/readings', (request, response) => {
+  const time =  Math.floor(Date.now()/1000)
   const field = fields.find(({ id }) => id === request.params.fieldId);
   if (!field) return response.status(404).json({ error: 'Field not found' });
 
@@ -122,6 +120,7 @@ app.post('/api/fields/:fieldId/readings', (request, response) => {
     moisture,
     recordedAt: new Date(recordedAt).toISOString(),
   };
-  readings.push(reading);
+  readings.push(reading)
+  cache.add(reading, time)
   return response.status(201).json(reading);
 });

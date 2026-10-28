@@ -57,4 +57,22 @@ I have now got most of the cache working as expected. The happy paths return the
 
 Integrate the cache into the application flow, finish the delete behavior, and handle bad-path cases.
 
+## Progress note — 2026-10-27 23:06:17 EDT
+
+### Outcome and verification
+
+The cache is now integrated into the GET and POST flow. A successful POST updates the in-memory readings source and cache. When the field cache is missing, empty, or contains an expired reading, the next GET reloads the full current field list and gives the refreshed entries a shared timestamp. The core acceptance scenarios were exercised through the real routes and cache; the expiry refresh is covered with a separate cache instance and simulated clock.
+
+- `npm test`: 5 passed.
+- `npm run typecheck`: passed.
+- The current suite checks field isolation, repeated reads, POST visibility, invalid moisture/date, unknown-field POST, unchanged readings after rejected writes, and expiry refresh with one newer cached entry.
+
+### AI use and ownership update
+
+AI implemented the final cache-refresh change in `src/app.ts` after I explicitly asked for the smallest fix, and authored the final test updates in `test/app.test.ts` after I requested them. I wrote the initial cache implementation and worked through its data model, TTL behavior, route integration, and expected results. I used AI explanations and runtime output checks, challenged a run that had used the wrong cache instance, and clarified when AI exceeded the requested scope. The final code and test changes are AI-assisted, not independent work I authored.
+
+### Debrief and follow-up
+
+I explained that refreshing all readings aligns them to one TTL; that a missing cache key is recreated from the source; that POST updates both source and cache; and that a process-local cache/source would diverge across Node processes and would not survive restart. See [`RETROSPECTIVE.md`](RETROSPECTIVE.md) for the full review, test evidence, debrief record, and assessment.
+
 
