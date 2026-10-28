@@ -1,6 +1,28 @@
 # WIP — Challenge 004: Quality Incident Briefs
 
-## Progress note — 2026-10-28 14:16:29 EDT
+## Progress note — 2026-10-28 18:42:27 EDT
+
+### Current understanding and implementation direction
+
+I am starting to understand state and nodes. A node is a function that performs one step; for this workflow, it can return a dictionary of state updates, and fixed graph edges can determine what runs next. I do not need `Command` just to update state; I would use it when a node needs to change state and dynamically choose the next node. I initially described nodes as possibly returning nothing, but I should verify that separately—when a node needs to update graph state, returning an update dictionary is the pattern I understand and am using.
+
+I have separated the model, state, and node definitions into `app/model.py`, `app/state.py`, and `app/nodes.py`, with the intention of wiring them together when I build the workflow. My current `read_incident` node receives an incident mapping and returns a partial dictionary containing its `id`, `line`, `category`, `reported_at`, `description`, and `status`. It does not look up an incident by ID itself. The graph's initial state will be the incident data passed by the caller; as nodes run, state carries that input and any updates they return.
+
+I was partly on the right track earlier: I could invoke the model with a prompt and data, but that alone was not an explicit LangGraph graph. I am now creating node functions and working toward the graph that connects them. I believe most of the nodes are in place, but the actual workflow still needs to be built and verified.
+
+I have mainly been learning from the [LangGraph documentation](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph). It felt convoluted at first, but is becoming clearer as I look around the docs and connect the concepts to the code. I am still learning LangChain and LangGraph, including how tools fit in; I do not currently see a need for multiple tools in this task.
+
+### Current code and remaining work
+
+- There is no graph builder file in the current `app/` directory, so the nodes are not yet connected in a compiled, invoked LangGraph workflow.
+- `create_brief` now invokes `structured_llm` and returns `{"brief": response.brief}` without mutating input state. `BriefResponse` is a `TypedDict`; I still need to confirm that the structured-output runtime result supports `.brief` attribute access.
+- The prompt currently uses category, reported time, description, and status; `line` is present in state but is not included in that prompt.
+- `validate_brief` currently checks for empty output but not the 500-character maximum. Provider failures and error handling still need attention.
+- In the current `app/main.py`, the brief route is a `501 Not Implemented` stub and the agent import is commented out. An earlier route run returned a brief-shaped body with HTTP 501, but that was from a previous code snapshot, not the current route behavior.
+
+I initially thought `read_incident` omitted `line` and that `create_brief` still mutated state; checking the current files corrected both assumptions.
+
+### Progress note — 2026-10-28 14:16:29 EDT
 
 ### Updated direction
 
@@ -10,7 +32,7 @@ I think I need to build an actual graph with nodes rather than only invoking the
 
 ### Current progress
 
-I configured the challenge to call my local model served by oMLX instead of relying only on a fake provider. The standalone model call worked and returned a generated response. I then connected the model call to the brief route and tested `POST /incidents/INC-1002/brief`. The response body contained the expected incident ID and a concise brief based on the recorded temperature incident, but the HTTP status was **501**, so route behavior is not fully aligned with the acceptance criteria yet.
+I configured the challenge to call my local model served by oMLX instead of relying only on a fake provider. The standalone model call worked and returned a generated response. In an earlier code snapshot, I connected the model call to the brief route and tested `POST /incidents/INC-1002/brief`; it returned a brief body for `INC-1002` with HTTP **501**. That was evidence of an earlier iteration, not the current route: the current `app/main.py` has the brief endpoint back at its 501 stub.
 
 I still need to finish error handling and verify the remaining acceptance criteria, including rejecting empty or over-500-character briefs, handling provider failures, and ensuring unknown IDs return 404.
 

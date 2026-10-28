@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 
 from app.data import INCIDENTS
 from app.providers import TextProvider
-
+# from app.debrief_agent import call_agent
 
 def create_app(provider: TextProvider | None = None) -> FastAPI:
     app = FastAPI(title="Quality Incident Register")
@@ -21,6 +21,10 @@ def create_app(provider: TextProvider | None = None) -> FastAPI:
 
     @app.post("/incidents/{incident_id}/brief", status_code=501)
     def create_brief(incident_id: str) -> None:
+        incident = next((item for item in INCIDENTS if item["id"] == incident_id), None)
+        if incident is None:
+            raise HTTPException(status_code=404, detail="Incident not found")
+
         raise HTTPException(status_code=501, detail="Incident briefs are not implemented")
 
     return app
