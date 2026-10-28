@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.main import app, create_app
+from tests.fakes import FakeTextProvider
 
 client = TestClient(app)
 
@@ -34,3 +35,11 @@ def test_brief_route_is_an_unimplemented_contract_stub():
     response = client.post("/incidents/INC-1001/brief")
 
     assert response.status_code == 501
+
+
+def test_app_accepts_an_injected_provider_for_offline_feature_tests():
+    provider = FakeTextProvider(response="A controlled test brief.")
+
+    test_app = create_app(provider)
+
+    assert test_app.state.text_provider is provider

@@ -1,10 +1,10 @@
 # Challenge 004 — Quality Incident Briefs
 
-**Level 3 · Food manufacturing · Python, FastAPI, pytest · AI integration**
+**Level 4 · Food manufacturing · Python, FastAPI, LangGraph, pytest · AI workflow**
 
 ## Business context
 
-A small food manufacturer records quality incidents raised during production, such as packaging defects and temperature excursions. Shift leads need a quick, readable overview before deciding which records to investigate, but the notes are written by different operators and vary in detail. A generated brief could help them scan the facts faster, provided it does not invent details or replace human judgment.
+A small food manufacturer records quality incidents raised during production, such as packaging defects and temperature excursions. Shift leads need a quick, readable overview before deciding which records to investigate, but the notes are written by different operators and vary in detail. A generated brief could help them scan the facts faster, provided staff can distinguish AI-generated text from the original report and retain human judgment.
 
 ## What already works
 
@@ -12,20 +12,21 @@ The service exposes a synthetic incident register: list all incidents or retriev
 
 ## Your assignment
 
-As a shift lead, I want to request a concise AI-generated brief for a recorded incident so that I can quickly understand the reported issue while keeping the original record as the source of truth.
+As a shift lead, I want a LangGraph-powered workflow to create a concise AI-generated brief for a recorded incident so I can scan the report faster without changing the underlying record.
 
 ## Acceptance criteria
 
-- `POST /incidents/{incident_id}/brief` returns a brief generated from that incident's recorded data.
-- The response identifies the incident and contains a concise, readable brief; it does not assert facts absent from the record or present recommendations as established facts.
-- Requesting a brief for an unknown incident returns `404`.
-- If the AI provider fails or returns unusable output, the service returns a clear server error rather than a fabricated brief.
-- The brief request does not change the incident record or the existing list/detail response shapes.
+- `POST /incidents/{incident_id}/brief` runs a LangGraph workflow using the selected incident's recorded data and returns its ID and a concise brief.
+- The workflow rejects empty or over-500-character generated briefs with a clear server error; it never substitutes invented text.
+- Requesting a brief for an unknown incident returns `404`; a provider failure returns a clear server error.
+- Tests can supply a fake provider, run without network access or credentials, and verify the incident data supplied to the provider.
+- Generating a brief does not change the incident record or the existing list/detail response shapes.
 
 ## Constraints
 
 - Use only the synthetic fixture data; do not send real food-safety or personal data to a provider.
-- The feature must be testable without credentials or a network call. Use a configurable/injectable fake AI provider in tests; any real provider integration is optional.
+- Use LangGraph for the workflow. Keep it small and focused; no agent tools, persistence, or human approval system is required.
+- The feature must be testable without credentials or a network call. Use the supplied injectable fake text provider in tests; any real provider integration is optional.
 - Treat generated text as untrusted output. A brief is informational and must not change incident status or make safety decisions.
 - Keep the existing list and detail endpoints backward-compatible.
 
@@ -66,7 +67,7 @@ The list response is a JSON array of incident records. A detail response resembl
 }
 ```
 
-The requested brief endpoint currently returns `501 Not Implemented`; this is an intentional contract stub.
+The requested brief endpoint currently returns `501 Not Implemented`; this is an intentional contract stub. `app/providers.py` defines the provider boundary, and `tests/fakes.py` contains a configurable fake provider for offline feature tests.
 
 ## Optional stretch goal
 
