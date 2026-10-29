@@ -1,57 +1,5 @@
 # WIP — Challenge 004: Quality Incident Briefs
 
-## Progress note — 2026-10-29 00:02:21 EDT
-
-### Final reflection and status
-
-Once I understood how state and nodes work, building the workflow and connecting it to the route became pretty straightforward. The provider abstraction took more guidance: I initially did not know where to start or what to look at, but talking it through with AI and seeing examples helped me understand how to implement it and why it is useful.
-
-This was my first time using LangGraph. It feels similar to n8n, with more flexibility because I define the nodes and workflow directly. I now feel I have a decent practical understanding and could discuss the core concepts, while recognizing there is still a lot more to learn. I may try converting my n8n RAG workflow to LangGraph. I also want hands-on experience creating and using tools where they provide real value; this brief workflow did not need tools.
-
-I estimate this challenge took roughly 4–7 hours across yesterday and today. That reflects learning the framework while implementing it, not just the amount of code.
-
-The implementation is complete. The test suite reports 10 passed, and the real oMLX happy path was previously verified. The fake provider covers invalid generated output and provider exceptions; actual oMLX outages and concurrent load remain unverified. The LangGraph workflow is intentionally small, with one node between `START` and `END`.
-
-## Progress note — 2026-10-28 18:42:27 EDT
-
-### Current understanding and final outcome
-
-I am starting to understand state and nodes. A node is a function that performs one step; it can return a dictionary of state updates, and fixed graph edges determine what runs next. `Command` is not needed just to update state; it can be used when a node needs to update state and dynamically choose where to go next. For this fixed flow, ordinary edges are enough.
-
-The graph receives the incident data as its initial state through `agent.invoke(incident)`. Nodes can read the current state and return partial updates, which LangGraph merges. The graph returns its final state, and the route selects the response fields. I initially had a `read_incident` node that copied data already present in initial state; after understanding the flow, I removed it as redundant. The final graph is a small explicit workflow: `START -> create_brief -> END`.
-
-I wanted to use an actual LLM from the start. My first approach was a direct chat invocation, which connected to oMLX but did not itself build the LangGraph workflow I wanted to learn. The hardest concept at first was how state flows into nodes and how node functions work with that data. Once I understood this, building the workflow and connecting it to the route was relatively straightforward.
-
-I now have a decent working understanding of LangGraph and feel I could discuss its core concepts, while recognizing there is still much more to learn. It feels similar to n8n in purpose, but more flexible because I manually define the nodes and graph. I may try converting my n8n RAG workflow to LangGraph. I also want hands-on experience creating and using tools where they solve a real need; this challenge did not need tools.
-
-### Current implementation and verification
-
-- `app/model.py` wraps the oMLX-compatible `ChatOpenAI` client in `BriefModel`, whose `generate(input_text)` method returns generated brief text.
-- `app/providers.py` defines the `TextProvider` protocol. `BriefModel` is the real provider; `tests/fakes.py` provides a fake with the same interface. `create_app()` defaults to `BriefModel()` but tests can explicitly pass a fake. Provider choice is made at app creation, not based on incident state and not by silently falling back when oMLX is unavailable.
-- `app/debrief_agent.py` builds and compiles the graph once per app, using a provider-bound node from `app/nodes.py`.
-- The node builds a prompt from incident category, reported time, description, and status; it returns `{"brief": ...}` for non-empty output up to 500 characters, otherwise `{"err": ...}`. The route returns the ID from state and the generated brief.
-- Invalid returned text and provider exceptions are separate paths. The node represents invalid text as an error state update; the route turns that into an HTTP 500 with a validation description. A provider exception propagates from `agent.invoke`; the route catches it and returns a generic HTTP 500 description.
-- `pytest -q` reports **10 passed** (28 dependency deprecation warnings). TestClient coverage uses the fake provider for successful output, empty and overlong output, unknown IDs, provider exceptions, supplied incident facts, and unchanged incident/list/detail data.
-- A live Uvicorn request to the local oMLX model previously returned a valid brief for `INC-1002` with HTTP 200; list/detail routes returned 200 and unknown IDs returned 404. The live happy-path check occurred before the final exception-handler edit; the final provider-failure path is verified with the fake.
-
-### Remaining verification and production questions
-
-I have not organically induced an oMLX failure or load-tested many concurrent requests. A fake-provider baseline can help separate route/graph overhead from model generation, but it does not reproduce oMLX latency or contention. A useful comparison should use the same concurrency and measure latency percentiles, throughput, and failures, alongside oMLX server/resource observations. I should also consider finite timeouts, safe provider-error logging, whether the prompt should include `line`, and how to evaluate factual grounding. Prompt instructions alone do not guarantee the model will never invent details.
-
-### Implementation journey and AI use
-
-The provider interface took substantial guidance to understand and implement. I initially did not know where to start or what to look at; discussing the protocol with AI and seeing unrelated examples helped me understand that it describes a shared method shape, while the real and fake providers are concrete implementations. I now understand the benefit: the app can use the real provider normally and tests can explicitly inject a controlled fake without duplicating workflow code.
-
-Other issues encountered across the challenge included selecting the correct Python interpreter, explicitly loading `.env.local`, LangGraph package-version/import problems, package-qualified sibling imports, dictionary-versus-object access, and returning HTTP 501 because the route decorator still declared that status. Inspecting actual responses exposed that the prompt initially did not include incident data and that the route's success/error handling needed adjustment. I also corrected my understanding that provider exceptions are not automatically converted to HTTP errors: they propagate from invocation and must be caught by the route.
-
-AI helped explain concepts, inspect code and errors, and provided implementation guidance. AI also authored the route tests and updated the README description; those tests were run. I used the observed test and live-request results to verify behavior rather than treating explanations as proof. I estimate the challenge took roughly **4–7 hours across yesterday and today**, largely because LangGraph was new and I was learning as I built.
-
-## Progress note — 2026-10-28 14:16:29 EDT
-
-### Updated direction
-
-I think I need to build an actual graph with nodes rather than only invoking the model directly. The [Thinking in LangGraph guide](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph) looks like a useful walkthrough. I plan to read it more closely and use it to understand how to convert the current invocation into an explicit graph.
-
 ## Progress note — 2026-10-28 14:13:15 EDT
 
 ### Current progress
@@ -64,7 +12,7 @@ I still need to finish error handling and verify the remaining acceptance criter
 
 I am unsure whether what I have built counts as a LangGraph workflow. My current approach calls the model with a prompt and incident data; I do not use multiple tools. For this incident-brief task, I do not currently see why multiple tools are needed. I can imagine tools being useful if the agent gains more capabilities later, but I do not want to add them just for the sake of using tools.
 
-In the current `app/debrief_agent.py` snapshot, the model is invoked directly with `llm.invoke(...)`; I do not see a LangGraph graph being built or invoked yet. That makes the distinction between a model call and a LangGraph workflow an open learning question for me. I may revisit whether to convert this into an explicit LangGraph graph after I better understand the framework's concepts and the task's needs.
+In the current `app/debrief_agent.py` snapshot, the model is invoked directly with `llm.invoke(...)`; I do not see a LangGraph graph being built or invoked yet. That makes the distinction between a model call and a LangGraph workflow an open learning question for me. I may revisit whether to convert this into an explicit LangGraph graph after I better understand LangGraph's concepts and the requirements of this task.
 
 ### Issues encountered and what I learned
 
@@ -84,5 +32,53 @@ Complete the route's error handling and acceptance-criteria checks, and decide�
 ### AI use and ownership
 
 - **My work:** I configured the local oMLX model and environment, connected it to my brief-generation code and route, and investigated behavior by running the script and testing the route. I used output inspection to catch that the model was not receiving the incident data.
-- **AI assistance:** AI explained configuration and errors, inspected files and diagnostics, and ran route requests to report the observed responses. AI made a small workspace interpreter-setting change and added the explicit `.env.local` path to `app/model.py` after I asked for those changes. No feature tests or graph implementation were added by AI at this earlier point.
+- **AI assistance:** AI explained configuration and errors, inspected files and diagnostics, and ran route requests to report the observed responses. AI made a small workspace interpreter-setting change and added the explicit `.env.local` path to `app/model.py` after I asked for those changes. No feature tests or graph implementation were added by AI.
 - **Ownership boundary:** I was still implementing the workflow and remaining acceptance criteria. This note records observed command outputs separately from my understanding and open questions; it does not claim the feature is complete.
+
+## Progress note — 2026-10-28 14:16:29 EDT
+
+### Updated direction
+
+I think I need to build an actual graph with nodes rather than only invoking the model directly. The [Thinking in LangGraph guide](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph) looks like a useful walkthrough. I plan to read it more closely and use it to understand how to convert the current invocation into an explicit graph.
+
+## Progress note — 2026-10-28 18:42:27 EDT
+
+### Current understanding and implementation direction
+
+I am starting to understand state and nodes. A node is a function that performs one step; for this workflow, it can return a dictionary of state updates, and fixed graph edges can determine what runs next. I do not need `Command` just to update state; I would use it when a node needs to change state and dynamically choose the next node. I initially described nodes as possibly returning nothing, but I should verify that separately—when a node needs to update graph state, returning an update dictionary is the pattern I understand and am using.
+
+I have separated the model, state, and node definitions into `app/model.py`, `app/state.py`, and `app/nodes.py`, with the intention of wiring them together when I build the workflow. My current `read_incident` node receives an incident mapping and returns a partial dictionary containing its `id`, `line`, `category`, `reported_at`, `description`, and `status`. It does not look up an incident by ID itself. The graph's initial state will be the incident data passed by the caller; as nodes run, state carries that input and any updates they return.
+
+I was partly on the right track earlier: I could invoke the model with a prompt and data, but that alone was not an explicit LangGraph graph. I am now creating node functions and working toward the graph that connects them. I believe most of the nodes are in place, but the actual workflow still needs to be built and verified.
+
+I have mainly been learning from the [LangGraph documentation](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph). It felt convoluted at first, but is becoming clearer as I look around the docs and connect the concepts to the code. I am still learning LangChain and LangGraph, including how tools fit in; I do not currently see a need for multiple tools in this task.
+
+### Current code and remaining work
+
+- There is no graph builder file in the current `app/` directory, so the nodes are not yet connected in a compiled, invoked LangGraph workflow.
+- `create_brief` now invokes `structured_llm` and returns `{"brief": response.brief}` without mutating input state. `BriefResponse` is a `TypedDict`; I still need to confirm that the structured-output runtime result supports `.brief` attribute access.
+- The prompt currently uses category, reported time, description, and status; `line` is present in state but is not included in that prompt.
+- `validate_brief` currently checks for empty output but not the 500-character maximum. Provider failures and error handling still need attention.
+- In the current `app/main.py`, the brief route is a `501 Not Implemented` stub and the agent import is commented out. An earlier route run returned a brief-shaped body with HTTP 501, but that was from a previous code snapshot, not the current route behavior.
+
+I initially thought `read_incident` omitted `line` and that `create_brief` still mutated state; checking the current files corrected both assumptions.
+
+## Progress note — 2026-10-29 00:02:21 EDT
+
+### Outcome and verification
+
+The implementation is complete. The test suite reports 10 passed. The real oMLX happy path was previously verified; the fake provider covers invalid generated output and provider exceptions. Actual oMLX outages and concurrent load remain unverified. The final graph is intentionally small, with one node between `START` and `END`.
+
+### AI use and ownership update
+
+The provider abstraction took more guidance than connecting the graph to the route. I initially did not know where to start or what to look at; talking it through with AI and seeing examples helped me understand how to implement the protocol and why it is useful. AI authored the route tests, which were run, and helped explain and debug the implementation. The real oMLX integration and workflow were built iteratively with guidance.
+
+### Debrief and follow-up
+
+I now understand the core state/node/edge flow and the distinction between an invalid returned brief and a provider exception. I want hands-on experience creating and using tools when they solve a real need. I may also try converting my n8n RAG workflow to LangGraph. Actual model failure behavior and concurrent load are useful follow-up verification. See [RETROSPECTIVE.md](RETROSPECTIVE.md) for the full review, debrief record, and final score.
+
+## Reflection — time and learning
+
+This was my first time using LangGraph. It feels similar to n8n, with more flexibility because I define the nodes and workflow directly. I have a decent practical understanding and feel I could discuss the core concepts with someone, while recognizing there is still a lot more to learn.
+
+Once I understood how state and nodes work, building the workflow and connecting it to the route became pretty straightforward. I estimate this challenge took roughly 4–7 hours across yesterday and today; much of that was learning the framework as I implemented it, not just writing code.
