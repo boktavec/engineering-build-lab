@@ -1,5 +1,17 @@
 # WIP — Challenge 004: Quality Incident Briefs
 
+## Progress note — 2026-10-29 00:02:21 EDT
+
+### Final reflection and status
+
+Once I understood how state and nodes work, building the workflow and connecting it to the route became pretty straightforward. The provider abstraction took more guidance: I initially did not know where to start or what to look at, but talking it through with AI and seeing examples helped me understand how to implement it and why it is useful.
+
+This was my first time using LangGraph. It feels similar to n8n, with more flexibility because I define the nodes and workflow directly. I now feel I have a decent practical understanding and could discuss the core concepts, while recognizing there is still a lot more to learn. I may try converting my n8n RAG workflow to LangGraph. I also want hands-on experience creating and using tools where they provide real value; this brief workflow did not need tools.
+
+I estimate this challenge took roughly 4–7 hours across yesterday and today. That reflects learning the framework while implementing it, not just the amount of code.
+
+The implementation is complete. The test suite reports 10 passed, and the real oMLX happy path was previously verified. The fake provider covers invalid generated output and provider exceptions; actual oMLX outages and concurrent load remain unverified. The LangGraph workflow is intentionally small, with one node between `START` and `END`.
+
 ## Progress note — 2026-10-28 18:42:27 EDT
 
 ### Current understanding and final outcome
