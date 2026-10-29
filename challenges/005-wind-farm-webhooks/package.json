@@ -1,0 +1,19 @@
+{
+  "name": "wind-farm-webhooks-challenge",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.30",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

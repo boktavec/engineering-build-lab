@@ -7,7 +7,9 @@ I want a **new, independent, realistic feature-building exercise** to implement 
 ## Selection rules
 
 - If there are no prior completed challenges, create **Challenge 001 at Level 1**: easy for an experienced TypeScript/Python developer but still requiring some reasoning, design, and testing.
-- For subsequent challenges, gradually increase difficulty based on completed entries in `CHALLENGE_LOG.md`. Increase only a little at a time; if the previous exercise exposed gaps, reinforce the level using a different setting or technology.
+- For subsequent challenges, use the most recent **completed** entries in `CHALLENGE_LOG.md` to choose the next level. Normally advance one level from the latest completed challenge; do not downgrade solely because some skills were unverified or AI-assisted.
+- Treat each entry's **Suggested next level** as explicit calibration guidance. If it recommends consolidation at the current level, stay there and reinforce the identified gap in a different setting or technology—not below that level. Advance when the log supports it; reserve Level 5 for evidence of readiness for a broader, multi-component challenge with explicit failure modes.
+- Calibrate to the actual scope and reasoning burden of the feature, not its title or technology. Briefly verify that the acceptance criteria and constraints genuinely fit the selected level; don't label a narrow task with a higher level just to match progression.
 - Pick a **different plausible industry and technical theme** than the previous challenge. The exercises don't need to be related.
 - Rotate between **TypeScript/Node.js and Python**; choose whichever fits the problem. Occasionally include new technologies, such as a database, middleware, message queue, LangGraph, Docker, Kubernetes, Terraform, observability, or CI/CD.
 - Vary the actual nature of the work: adding behavior, integrating a service, introducing a cross-cutting concern, adjusting data handling, creating an AI workflow, changing infrastructure, or improving testing/reliability.
