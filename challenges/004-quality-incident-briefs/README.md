@@ -67,7 +67,7 @@ The list response is a JSON array of incident records. A detail response resembl
 }
 ```
 
-The requested brief endpoint currently returns `501 Not Implemented`; this is an intentional contract stub. `app/providers.py` defines the provider boundary, and `tests/fakes.py` contains a configurable fake provider for offline feature tests.
+The brief endpoint runs the LangGraph workflow. `app/providers.py` defines the provider boundary, and `tests/fakes.py` contains a configurable fake provider for offline route tests.
 
 ## Optional stretch goal
 

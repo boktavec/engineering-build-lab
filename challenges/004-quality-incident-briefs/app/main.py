@@ -2,11 +2,17 @@ from fastapi import FastAPI, HTTPException
 
 from app.data import INCIDENTS
 from app.providers import TextProvider
-# from app.debrief_agent import call_agent
+from app.debrief_agent import build_agent
+from app.model import BriefModel
 
 def create_app(provider: TextProvider | None = None) -> FastAPI:
     app = FastAPI(title="Quality Incident Register")
+    if provider is None:
+        provider = BriefModel()
+
     app.state.text_provider = provider
+
+    agent = build_agent(provider)
 
     @app.get("/incidents")
     def list_incidents() -> list[dict[str, str]]:
@@ -19,13 +25,21 @@ def create_app(provider: TextProvider | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail="Incident not found")
         return incident
 
-    @app.post("/incidents/{incident_id}/brief", status_code=501)
+    @app.post("/incidents/{incident_id}/brief")
     def create_brief(incident_id: str) -> None:
         incident = next((item for item in INCIDENTS if item["id"] == incident_id), None)
         if incident is None:
             raise HTTPException(status_code=404, detail="Incident not found")
 
-        raise HTTPException(status_code=501, detail="Incident briefs are not implemented")
+        try:
+            response = agent.invoke(incident) # type: ignore
+        except Exception:
+            raise HTTPException(status_code=500, detail="Brief generation failed")
+
+        if"err" in response:
+            raise HTTPException(status_code=500, detail=response["err"])
+
+        return {"id": response["id"], "brief": response["brief"]} # type: ignore
 
     return app
 
