@@ -67,16 +67,17 @@
 
 ## Final assessment
 
-| Category | Weight | Score | Evidence and feedback |
+| Category | Weight | Score / status | Evidence and feedback |
 |---|---:|---:|---|
-| Problem Understanding | 15% | **4/5** | The learner wanted a real local model and came to distinguish direct invocation from the explicit graph required by the challenge. They discussed the acceptance paths and no-tools constraint. Improve by mapping criteria to verification evidence before implementation. |
-| Problem-Solving and Reasoning | 15% | **4/5** | Investigated import/type/prompt/route failures and used output and test evidence to correct assumptions. The learner proposed removing a redundant node and a bounded retry design. Improve load-test reasoning with comparable workload measurements. |
-| Implementation and Correctness | 20% | **4/5** | The learner integrated the oMLX-backed provider, graph, and route; the real happy path worked, and the final application paths pass the suite. Provider-protocol guidance was substantial, but that is not itself a correctness deduction. Real-provider outage behavior and output grounding remain unverified; add operational logging and review prompt coverage as follow-up. |
-| Testing and Verification | 15% | **4/5** | Ten route tests cover success, validation boundaries, unknown IDs, provider exceptions, input facts, and immutability; a live oMLX happy path was observed. Improve by testing the real provider under controlled outage/load conditions where feasible. |
-| Engineering Judgment | 15% | **4/5** | Kept the workflow small, avoided unnecessary tools, and used explicit provider injection rather than silently substituting a fake. Production follow-up: finite timeouts, safe error logging, capacity measurements, and grounding review. |
-| Technical Understanding | 10% | **3/5** | The learner explained state, node updates, edges, provider contracts, and error paths after targeted clarification. Retry routing and tool use remain discussed rather than implemented; build a small exercise to demonstrate those concepts. |
-| AI Effectiveness and Ownership | 10% | **4/5** | The learner used AI for explanations and examples, challenged behavior with tests, and applied the concepts in their own workflow. AI authored the route tests and some documentation; keep separating assisted code from personally verified understanding. |
+| Problem Understanding | 15% | **4** | The learner wanted a real local model and came to distinguish direct invocation from the explicit graph required by the challenge. They discussed the acceptance paths and no-tools constraint. Improve by mapping criteria to verification evidence before implementation. |
+| Problem-Solving and Reasoning | 15% | **4** | Investigated import/type/prompt/route failures and used output and test evidence to correct assumptions. The learner proposed removing a redundant node and a bounded retry design. Improve load-test reasoning with comparable workload measurements. |
+| Implementation and Correctness | 20% | **4** | The learner integrated the oMLX-backed provider, graph, and route; the real happy path worked, and the final application paths pass the suite. Provider-protocol guidance was substantial, but that is not itself a correctness deduction. Real-provider outage behavior and output grounding remain unverified; add operational logging and review prompt coverage as follow-up. |
+| Testing and Verification | 15% | **4** | Ten route tests cover success, validation boundaries, unknown IDs, provider exceptions, input facts, and immutability; a live oMLX happy path was observed. Improve by testing the real provider under controlled outage/load conditions where feasible. |
+| Engineering Judgment | 15% | **4** | Kept the workflow small, avoided unnecessary tools, and used explicit provider injection rather than silently substituting a fake. Production follow-up: finite timeouts, safe error logging, capacity measurements, and grounding review. |
+| Technical Understanding | 10% | **3** | The learner explained state, node updates, edges, provider contracts, and error paths after targeted clarification. Retry routing and tool use remain discussed rather than implemented; build a small exercise to demonstrate those concepts. |
+| AI Effectiveness and Ownership | 10% | **4** | The learner used AI for explanations and examples, challenged behavior with tests, and applied the concepts in their own workflow. AI authored the route tests and some documentation; keep separating assisted code from personally verified understanding. |
 
+- **Weighted overall (rough reflection aid):** **3.90 / 5** across all seven applicable observed categories; none were excluded. This is not an objective measure of ability.
 - **Verified outcome:** Complete; all 10 tests pass, and a live oMLX happy-path request returned a brief. Real-model outage and load behavior remain unverified.
 - **Key accomplishment:** Connected a real local model through an injectable provider to an explicit LangGraph workflow and FastAPI route.
 - **Improvement area:** Build confidence with conditional routing/retries and quantify real-provider behavior under failures/load.
