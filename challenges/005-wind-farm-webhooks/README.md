@@ -23,6 +23,18 @@ As an operations engineer, I want the service to receive authenticated monitorin
 - A valid but older reading cannot overwrite a newer reading for the same turbine; document the response behavior for this stale event.
 - Existing list and detail routes retain their response shape and continue to work.
 
+## Webhook response behavior
+
+| Outcome | HTTP status | Response body |
+|---|---:|---|
+| Accepted event | 200 | `{"msg":"Telemetry accepted"}` |
+| Duplicate event | 200 | `{"msg":"Duplicate event acknowledged"}` |
+| Missing signature | 401 | `{"err":"Missing webhook signature"}` |
+| Invalid signature | 401 | `{"err":"Invalid webhook signature"}` |
+| Invalid payload | 400 | `{"err":"Invalid webhook payload"}` |
+| Unknown turbine | 404 | `{"error":"Turbine not found"}` |
+| Stale reading | 409 | `{"err":"Stale reading"}` |
+
 ## Constraints
 
 - Use only synthetic data and a local signing secret; do not call a real provider.
