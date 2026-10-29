@@ -26,7 +26,10 @@ Backend engineering (Python, TypeScript, Node.js), APIs and middleware, database
 
 | # | Project | Technology | Difficulty | Status |
 |---|---|---|---|---|
-| — | No challenges yet | — | — | Ready to start |
+| 001 | [Rail Yard Consignment Search](challenges/001-rail-freight-dwell-alerts/README.md) | TypeScript, Express, Node.js | Level 1 | Complete |
+| 002 | [Bookshop Stock Holds](challenges/002-bookshop-stock-holds/README.md) | Python, FastAPI, SQLite | Level 2 | Complete |
+| 003 | [Field Reading Cache](challenges/003-field-reading-cache/README.md) | TypeScript, Node.js, Express | Level 3 | Complete |
+| 004 | [Quality Incident Briefs](challenges/004-quality-incident-briefs/README.md) | Python, FastAPI, LangGraph, oMLX | Level 4 | Complete |
 
 ## Navigate and run
 

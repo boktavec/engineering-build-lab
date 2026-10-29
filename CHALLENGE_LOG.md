@@ -37,6 +37,22 @@ Use this log to select varied, gradually harder challenges. Record **observed pr
 - **Follow-up topics:** Cache-aside vs write-through semantics; durable source of truth and multi-process cache coherence; independent test design for expiry.
 
 
+### Challenge 004 — Quality Incident Briefs
+- **Level / industry / stack:** Level 4 / food manufacturing / Python, FastAPI, LangGraph, LangChain, local oMLX model, pytest.
+- **Feature and skills practiced:** LangGraph workflow for incident briefs; state and node data flow; injectable real/fake provider contract; HTTP validation and error handling; offline route testing.
+- **Verification:** `python -m pytest -q` — 10 passed (28 dependency deprecation warnings). A live Uvicorn/oMLX happy-path request returned HTTP 200 with a brief; list/detail routes returned 200 and an unknown incident returned 404. The live model check preceded the final exception-handler edit; final provider-failure behavior was tested with the fake. No live oMLX outage or concurrent load test was performed.
+- **What went well:** The learner integrated the real local model and workflow with guidance, clarified state/node flow, removed a redundant node, and used fake-provider route tests for controlled validation and exception cases. They explained the provider protocol and why the app explicitly selects a real or fake implementation.
+- **Gaps / next practice target:** Real-provider outage behavior, concurrent load, and factual grounding remain unverified. Conditional retries and tool use were discussed but not implemented. Continue practicing LangGraph routing and measuring real-provider behavior.
+- **Suggested next level:** Level 4 consolidation in a different domain, with a modest conditional-routing or tool-use concept; advance after strengthening these areas.
+- **Challenge type / skills:** AI workflow / local model integration; graph state and nodes, provider injection, API error handling, integration testing.
+- **Completion status:** Complete.
+- **Assessment scores:** Problem Understanding (15%): 4; Problem-Solving and Reasoning (15%): 4; Implementation and Correctness (20%): 4; Testing and Verification (15%): 4; Engineering Judgment (15%): 4; Technical Understanding (10%): 3; AI Effectiveness and Ownership (10%): 4. Weighted reflection aid: 3.90/5; all categories observed, not an objective measure.
+- **Demonstrated strengths:** Evidence-based debugging; clear explanation of state updates, graph edges, and provider contracts after investigation; appropriate scope control by removing unnecessary nodes/tools.
+- **Knowledge gaps:** Retry routing and tool use are not yet implemented; actual oMLX outage/load behavior and systematic factuality checks remain unverified.
+- **AI assistance patterns:** AI provided substantial conceptual guidance on LangGraph state and the provider protocol, and authored route tests and documentation. The learner iterated on the real provider/workflow integration and verified behavior through test and live outputs; no precise authorship percentage is claimed.
+- **Key lessons:** Initial graph state comes from `invoke`; nodes return partial updates and edges define execution; a protocol describes a shared interface but is not itself a provider; fake-provider tests establish application behavior, not real model capacity or reliability.
+- **Follow-up topics:** Conditional routing with bounded retries; a practical LangGraph tool integration; controlled oMLX failure and concurrency testing with latency/throughput metrics; factual-grounding evaluation.
+
 ## Entry format
 
 When the learner confirms completion, append a short entry with:
@@ -68,7 +84,7 @@ When the learner confirms completion, append a short entry with:
 - [x] Caching / async work / queues
 - [x] Testing / mocking / integration tests
 - [ ] External APIs / webhooks
-- [ ] AI integration / LangGraph
+- [x] AI integration / LangGraph
 - [ ] Docker / Kubernetes
 - [ ] Terraform / IaC
 - [ ] CI/CD / observability / reliability
