@@ -53,6 +53,22 @@ Use this log to select varied, gradually harder challenges. Record **observed pr
 - **Key lessons:** Initial graph state comes from `invoke`; nodes return partial updates and edges define execution; a protocol describes a shared interface but is not itself a provider; fake-provider tests establish application behavior, not real model capacity or reliability.
 - **Follow-up topics:** Conditional routing with bounded retries; a practical LangGraph tool integration; controlled oMLX failure and concurrency testing with latency/throughput metrics; factual-grounding evaluation.
 
+### Challenge 007 — Film Equipment Inventory MCP Server
+- **Level / industry / stack:** Level 4 / film and television production / Python, FastAPI baseline, MCP Python SDK 2.3.0, pytest.
+- **Feature and skills practiced:** Local stdio MCP server, tool schemas and discovery, direct reuse of shared inventory functions, input validation, error signaling, protocol-level integration testing.
+- **Verification:** `cd challenges/007-film-equipment-mcp && .venv/bin/python -m pytest -q` — 4 passed. Real MCP client sessions over stdio exercised initialization/discovery, filtered and unfiltered list calls, known/unknown lookups, no-match, and invalid numeric input.
+- **What went well:** Learner reports implementing the MCP server and making its design decisions. They identified that the official docs were for SDK v2 while `pyproject.toml` pinned v1; assistant corrected the pin to v2.3.0 at their request. Learner explained direct tool-to-inventory flow, pre-handler schema validation, and error-versus-empty-result semantics.
+- **Gaps / next practice target:** Async `await`/blocking I/O and the relationship between stdio transport and concurrency need further teach-back. No penalty for the initial HTTP assumption (corrected before implementation), assistant-caused version guidance mismatch, or unrequired missing-file handling.
+- **Suggested next level:** Continue at Level 4 in a different domain; reinforce async I/O and transport boundaries before moving to Level 5.
+- **Challenge type / skills:** MCP integration / stdio, tool contracts, Python SDK versioning, integration tests.
+- **Completion status:** Complete under the learner's revised scope; the architecture-document deliverable was removed from scope. The README on disk still lists it, so the repository brief may need syncing if desired.
+- **Assessment scores:** Problem Understanding (15%): 4; Problem-Solving and Reasoning (15%): 4; Implementation and Correctness (20%): 4; Testing and Verification (15%): 4; Engineering Judgment (15%): 3; Technical Understanding (10%): 3; AI Effectiveness and Ownership (10%): 4. Weighted reflection aid: 3.75/5; all categories observed, not an objective measure.
+- **Demonstrated strengths:** Corrected the SDK docs/version mismatch; described the shared-inventory call path; understood schema rejection and error-versus-empty semantics.
+- **Knowledge gaps:** Non-blocking async I/O and stdio's local process/pipe limitation versus concurrency remain topics for practice.
+- **AI assistance patterns:** Learner reports owning implementation and decisions. AI updated the SDK pin at the learner's request, authored the MCP integration test, answered questions, and initially gave v1 guidance that the learner challenged. No independent authorship claim for the AI-written test.
+- **Key lessons:** MCP transport does not dictate backend calls; schema validation can reject malformed arguments before a handler runs; a tool error is distinct from a valid empty result; async declarations do not make synchronous I/O non-blocking.
+- **Follow-up topics:** Python awaitables and blocking I/O; MCP stdio versus remote transports; reviewing AI-generated protocol tests.
+
 ## Entry format
 
 When the learner confirms completion, append a short entry with:
