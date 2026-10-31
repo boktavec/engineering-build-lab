@@ -1,0 +1,29 @@
+[
+  {
+    "id": "CAM-204",
+    "name": "Asteria 6K cinema camera kit",
+    "category": "camera",
+    "availability": "available",
+    "condition": "ready",
+    "location": "Stage A cage",
+    "available_from": "2025-10-01T08:00:00Z"
+  },
+  {
+    "id": "AUD-118",
+    "name": "Field recorder and boom kit",
+    "category": "audio",
+    "availability": "reserved",
+    "condition": "ready",
+    "location": "Audio room",
+    "available_from": "2025-10-03T17:00:00Z"
+  },
+  {
+    "id": "LGT-052",
+    "name": "Bi-color LED panel set",
+    "category": "lighting",
+    "availability": "maintenance",
+    "condition": "inspection required",
+    "location": "Service bench",
+    "available_from": null
+  }
+]
