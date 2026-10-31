@@ -8,14 +8,12 @@ mcp = MCPServer("Silver Frame Rentals Equipment Inventory")
 @mcp.tool()
 def list_equipment(category: str | None = None, availability: str | None = None):
     '''Retrieve list of equipment. Can receive a filtered list
-    by providing a category and/or availability or give no f
-    ilter and return the whole list.'''
+    by providing a category and/or availability or give no
+    filter and return the whole list.'''
 
     equipment_list = _list_equipment(category, availability)
 
     return equipment_list
-
-
 
 
 @mcp.tool()
