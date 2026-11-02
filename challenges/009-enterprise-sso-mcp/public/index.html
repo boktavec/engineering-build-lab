@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Engineering Projects</title>
+  <script src="https://cdn.jsdelivr.net/npm/keycloak-js@26.2.5/dist/keycloak.min.js"></script>
+  <style>body{font:16px system-ui;max-width:760px;margin:3rem auto;padding:0 1rem}button{padding:.55rem 1rem}pre{background:#f3f4f6;padding:1rem;white-space:pre-wrap}</style>
+</head>
+<body>
+  <h1>Engineering Projects</h1>
+  <p>Sign in using the local Engineering Lab identity provider to view project records.</p>
+  <button id="login">Sign in with SSO</button>
+  <button id="logout" hidden>Sign out</button>
+  <button id="refresh" hidden>Load projects</button>
+  <pre id="output" aria-live="polite">Not signed in.</pre>
+  <script>
+    const keycloak = new Keycloak({url: 'http://localhost:8080', realm: 'engineering', clientId: 'engineering-web'});
+    const output = document.querySelector('#output');
+    const setSignedIn = (signedIn) => {
+      document.querySelector('#login').hidden = signedIn;
+      document.querySelector('#logout').hidden = !signedIn;
+      document.querySelector('#refresh').hidden = !signedIn;
+    };
+    document.querySelector('#login').onclick = async () => {
+      try { await keycloak.init({onLoad: 'login-required', pkceMethod: 'S256'}); setSignedIn(true); await loadProjects(); }
+      catch (error) { output.textContent = `Sign-in failed: ${error.message}`; }
+    };
+    async function loadProjects() {
+      try {
+        const response = await fetch('/api/projects', {headers: {Authorization: `Bearer ${keycloak.token}`}});
+        output.textContent = JSON.stringify(await response.json(), null, 2);
+      } catch (error) { output.textContent = `Request failed: ${error.message}`; }
+    }
+    document.querySelector('#refresh').onclick = loadProjects;
+    document.querySelector('#logout').onclick = () => keycloak.logout({redirectUri: location.origin});
+  </script>
+</body>
+</html>

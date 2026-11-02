@@ -1,0 +1,56 @@
+{
+  "realm": "engineering",
+  "enabled": true,
+  "displayName": "Engineering Lab",
+  "clients": [
+    {
+      "clientId": "engineering-web",
+      "name": "Internal Engineering App",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "protocolMappers": [
+        {
+          "name": "internal-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "internal-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {"name": "employee", "description": "Read internal project data"},
+      {"name": "project-manager", "description": "Create internal projects"}
+    ]
+  },
+  "users": [
+    {
+      "username": "alex.employee",
+      "enabled": true,
+      "email": "alex.employee@example.test",
+      "firstName": "Alex",
+      "lastName": "Employee",
+      "credentials": [{"type": "password", "value": "employee-pass", "temporary": false}],
+      "realmRoles": ["employee"]
+    },
+    {
+      "username": "sam.manager",
+      "enabled": true,
+      "email": "sam.manager@example.test",
+      "firstName": "Sam",
+      "lastName": "Manager",
+      "credentials": [{"type": "password", "value": "manager-pass", "temporary": false}],
+      "realmRoles": ["employee", "project-manager"]
+    }
+  ]
+}
