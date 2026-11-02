@@ -10,6 +10,10 @@
 .env.*
 !.env.example
 
+# Deferred challenges (keep local until selected)
+/challenges/006-museum-artifact-api/
+/challenges/008-research-compute-agent/
+
 # Common generated artifacts
 *.db
 __pycache__/
