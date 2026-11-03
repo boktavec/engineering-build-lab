@@ -4,7 +4,7 @@
 
 ## Scenario
 
-Your company maintains an internal application used by employees authenticated through enterprise SSO. Engineering teams want to use its capabilities from Claude Code rather than switching to the web interface. The company uses an enterprise identity provider; for this local exercise, Keycloak provides the identity service.
+Your company maintains an internal application used by employees authenticated through enterprise SSO. Engineering teams want to access its capabilities from an MCP client rather than switching to the web interface. The company uses an enterprise identity provider; for this local exercise, Keycloak provides the identity service.
 
 ## Working baseline
 
@@ -21,15 +21,15 @@ These are disposable local-only credentials. Do not use them outside this exerci
 
 ## Your assignment
 
-Implement a secure MCP integration that allows authenticated employees to use the internal application's capabilities through Claude Code, preserving each user's identity and existing application permissions. Users must authenticate using the existing Keycloak identity provider.
+Implement a secure MCP integration that allows authenticated employees to use the internal application's capabilities through an MCP client, preserving each user's identity and existing application permissions. Users must authenticate using the existing Keycloak identity provider.
 
-The finished experience should connect Claude Code to your MCP service using Streamable HTTP, use browser-based SSO, and let users invoke meaningful tools backed by the existing REST API. Authentication, authorization, downstream identity, and failure behavior are part of the engineering problem. You own the architecture and implementation decisions.
+The finished experience should connect an MCP client to your MCP service using Streamable HTTP, use browser-based SSO, and let users invoke meaningful tools backed by the existing REST API. Authentication, authorization, downstream identity, and failure behavior are part of the engineering problem. You own the architecture and implementation decisions.
 
 ## Acceptance criteria
 
 Demonstrate with repeatable tests or a scripted verification that:
 
-- Claude Code connects to the MCP server using Streamable HTTP.
+- An MCP client connects to the MCP server using Streamable HTTP.
 - A user can authenticate through the existing Keycloak realm using a browser-based authorization flow.
 - An authenticated user can discover and invoke MCP tools backed by the internal application.
 - The application sees the correct user identity and applies its existing access rules; the employee and manager receive different access outcomes.
@@ -39,11 +39,11 @@ Demonstrate with repeatable tests or a scripted verification that:
 - MCP access does not bypass application authorization or forward credentials to an unintended audience.
 - Automated tests cover successful and rejected authentication/authorization behavior, including different users and token validation failures.
 
-Provide evidence for each criterion. State clearly what was tested with the real Keycloak/Claude Code flow versus test keys, HTTP clients, or other local substitutes.
+Provide evidence for each criterion. State clearly what was tested with the real Keycloak-to-MCP-client flow versus test keys, HTTP clients, or other local substitutes.
 
 ## Constraints
 
-- Use TypeScript/Node.js and the official MCP TypeScript SDK; use Streamable HTTP for Claude Code integration.
+- Use TypeScript/Node.js and the official MCP TypeScript SDK; use Streamable HTTP for MCP client integration.
 - Use the provided Keycloak realm and the existing application API as the identity provider and downstream system.
 - Preserve the baseline API's behavior and permissions. The mock application and its routes are supporting infrastructure, not the feature to redesign.
 - Use synthetic data and local infrastructure. No paid service, real employee identity, or production credential is needed.
