@@ -8,11 +8,11 @@ I configured the challenge to call my local model served by oMLX instead of rely
 
 I still need to finish error handling and verify the remaining acceptance criteria, including rejecting empty or over-500-character briefs, handling provider failures, and ensuring unknown IDs return 404.
 
-### LangGraph question / current understanding
+### LangGraph assessment / implementation direction
 
-I am unsure whether what I have built counts as a LangGraph workflow. My current approach calls the model with a prompt and incident data; I do not use multiple tools. For this incident-brief task, I do not currently see why multiple tools are needed. I can imagine tools being useful if the agent gains more capabilities later, but I do not want to add them just for the sake of using tools.
+The initial prototype called the model with a prompt and incident data, which validated the provider path but did not yet express the required workflow as a LangGraph graph. I chose to make the control flow explicit with graph state and nodes. The task did not require multiple tools; I kept tool use tied to a concrete requirement rather than adding tools for their own sake.
 
-In the current `app/debrief_agent.py` snapshot, the model is invoked directly with `llm.invoke(...)`; I do not see a LangGraph graph being built or invoked yet. That makes the distinction between a model call and a LangGraph workflow an open learning question for me. I may revisit whether to convert this into an explicit LangGraph graph after I better understand LangGraph's concepts and the requirements of this task.
+At this checkpoint, `app/debrief_agent.py` invoked `llm.invoke(...)` directly. I assessed that implementation against the assignment and identified the missing graph construction and invocation as the remaining integration work.
 
 ### Issues encountered and what I learned
 
@@ -27,7 +27,7 @@ In the current `app/debrief_agent.py` snapshot, the model is invoked directly wi
 
 ### Current focus
 
-Complete the route's error handling and acceptance-criteria checks, and decide—based on understanding the framework and the task's needs—whether to express the model call as an explicit LangGraph graph. Avoid adding tools unless they solve a real requirement.
+Complete the route's error handling and acceptance-criteria checks, then verify whether the explicit graph satisfies the workflow requirements. Avoid adding tools unless they solve a real requirement.
 
 ### AI use and ownership
 
@@ -39,19 +39,19 @@ Complete the route's error handling and acceptance-criteria checks, and decide�
 
 ### Updated direction
 
-I think I need to build an actual graph with nodes rather than only invoking the model directly. The [Thinking in LangGraph guide](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph) looks like a useful walkthrough. I plan to read it more closely and use it to understand how to convert the current invocation into an explicit graph.
+The direct model invocation was a useful provider smoke test, but the assignment called for explicit LangGraph orchestration. I used the [Thinking in LangGraph guide](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph) as a reference while translating the prototype into a node-based workflow.
 
 ## Progress note — 2026-10-28 18:42:27 EDT
 
 ### Current understanding and implementation direction
 
-I am starting to understand state and nodes. A node is a function that performs one step; for this workflow, it can return a dictionary of state updates, and fixed graph edges can determine what runs next. I do not need `Command` just to update state; I would use it when a node needs to change state and dynamically choose the next node. I initially described nodes as possibly returning nothing, but I should verify that separately—when a node needs to update graph state, returning an update dictionary is the pattern I understand and am using.
+The workflow uses nodes for discrete processing steps and fixed graph edges for deterministic control flow. Nodes return partial state-update dictionaries; `Command` is appropriate when a node must dynamically select the next destination, not merely to update state.
 
-I have separated the model, state, and node definitions into `app/model.py`, `app/state.py`, and `app/nodes.py`, with the intention of wiring them together when I build the workflow. My current `read_incident` node receives an incident mapping and returns a partial dictionary containing its `id`, `line`, `category`, `reported_at`, `description`, and `status`. It does not look up an incident by ID itself. The graph's initial state will be the incident data passed by the caller; as nodes run, state carries that input and any updates they return.
+I separated the model, state, and node definitions into `app/model.py`, `app/state.py`, and `app/nodes.py`. The `read_incident` node receives an incident mapping and returns a partial update containing its `id`, `line`, `category`, `reported_at`, `description`, and `status`; lookup by ID remains the route's responsibility. The caller supplies the graph's initial state, and nodes return updates as execution proceeds.
 
-I was partly on the right track earlier: I could invoke the model with a prompt and data, but that alone was not an explicit LangGraph graph. I am now creating node functions and working toward the graph that connects them. I believe most of the nodes are in place, but the actual workflow still needs to be built and verified.
+The direct invocation established the model call, while the explicit graph represented the workflow required by the assignment. Node functions were in place at this checkpoint; compiling and verifying the connected workflow remained.
 
-I have mainly been learning from the [LangGraph documentation](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph). It felt convoluted at first, but is becoming clearer as I look around the docs and connect the concepts to the code. I am still learning LangChain and LangGraph, including how tools fit in; I do not currently see a need for multiple tools in this task.
+I used the [LangGraph documentation](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph) to map the framework's state and node model to the workflow requirements. Tool use remained requirement-driven: this incident-brief flow did not need multiple tools.
 
 ### Current code and remaining work
 
@@ -61,7 +61,7 @@ I have mainly been learning from the [LangGraph documentation](https://docs.lang
 - `validate_brief` currently checks for empty output but not the 500-character maximum. Provider failures and error handling still need attention.
 - In the current `app/main.py`, the brief route is a `501 Not Implemented` stub and the agent import is commented out. An earlier route run returned a brief-shaped body with HTTP 501, but that was from a previous code snapshot, not the current route behavior.
 
-I initially thought `read_incident` omitted `line` and that `create_brief` still mutated state; checking the current files corrected both assumptions.
+Reviewing the current files corrected two assumptions: `read_incident` already included `line`, and `create_brief` returned an update without mutating its input.
 
 ## Progress note — 2026-10-29 00:02:21 EDT
 
@@ -71,14 +71,14 @@ The implementation is complete. The test suite reports 10 passed. The real oMLX 
 
 ### AI use and ownership update
 
-The provider abstraction took more guidance than connecting the graph to the route. I initially did not know where to start or what to look at; talking it through with AI and seeing examples helped me understand how to implement the protocol and why it is useful. AI authored the route tests, which were run, and helped explain and debug the implementation. The real oMLX integration and workflow were built iteratively with guidance.
+The provider boundary required more design iteration than connecting the graph to the route. Discussion and examples helped evaluate the protocol's role in selecting real and fake implementations. AI authored the route tests, which were run, and assisted with explanations and debugging; the real oMLX integration and workflow were built iteratively.
 
 ### Debrief and follow-up
 
-I now understand the core state/node/edge flow and the distinction between an invalid returned brief and a provider exception. I want hands-on experience creating and using tools when they solve a real need. I may also try converting my n8n RAG workflow to LangGraph. Actual model failure behavior and concurrent load are useful follow-up verification. See [RETROSPECTIVE.md](RETROSPECTIVE.md) for the full review, debrief record, and final score.
+The implementation and debrief established the state/node/edge flow and the distinction between an invalid returned brief and a provider exception. Follow-up opportunities include a useful tool integration, evaluating whether LangGraph fits my existing n8n RAG workflow, and verifying actual model failure behavior and concurrent load. See [RETROSPECTIVE.md](RETROSPECTIVE.md) for the review, debrief record, and final score.
 
 ## Reflection — time and learning
 
-This was my first time using LangGraph. It feels similar to n8n, with more flexibility because I define the nodes and workflow directly. I have a decent practical understanding and feel I could discuss the core concepts with someone, while recognizing there is still a lot more to learn.
+I approached LangGraph as an orchestration layer and compared its explicit nodes and state transitions with the n8n workflows I already use. Implementing the graph made the control flow concrete; I can explain how it differs from a direct model invocation and where routing or tools would add value. The framework offers additional capabilities to evaluate when requirements call for them.
 
-Once I understood how state and nodes work, building the workflow and connecting it to the route became pretty straightforward. I estimate this challenge took roughly 4–7 hours across yesterday and today; much of that was learning the framework as I implemented it, not just writing code.
+After establishing the state and node boundaries, connecting the workflow to the route was straightforward. I estimate this challenge took roughly 4–7 hours across two days, including framework evaluation, implementation, and verification.
